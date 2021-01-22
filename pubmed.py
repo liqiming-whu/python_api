@@ -16,14 +16,15 @@ Entrez.api_key = "c80ce212c7179f0bbfbd88495a91dd356708"
 
 
 class QueryPubMed:
-    __slots__ = ['keywords', 'journal', 'year', 'from_date', 'to_date', 'retmax', 'count', 'idlist']
-    def __init__(self, keywords=None, journal=None, year=None, from_date=None, to_date=date.today().strftime("%Y/%m/%d"), retmax=1000000):
+    __slots__ = ['keywords', 'mesh_topic', 'journal', 'year', 'from_date', 'to_date', 'retmax', 'count', 'idlist']
+    def __init__(self, keywords=None, mesh_topic=None, journal=None, year=None, from_date=None, to_date=date.today().strftime("%Y/%m/%d"), retmax=1000000):
         self.keywords = keywords
+        self.mesh_topic = mesh_topic
         self.journal = journal
         self.year = year
         self.from_date = from_date
         self.to_date = to_date
-        assert any(getattr(self, i) for i in self.__slots__[:4]), "At least one parameter is required."
+        assert any(getattr(self, i) for i in self.__slots__[:5]), "At least one parameter is required."
         self.retmax = retmax
         self.count = self.get_count()
         self.idlist = self.search()
@@ -39,6 +40,8 @@ class QueryPubMed:
         query_list = []
         if self.keywords:
             query_list.append(self.keywords)
+        if self.mesh_topic:
+            query_list.append(f"{self.mesh_topic}[MeSH Major Topic]")
         if self.journal:
             query_list.append(f"{self.journal}[ta]")
         if self.from_date:
